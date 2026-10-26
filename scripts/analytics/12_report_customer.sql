@@ -25,36 +25,45 @@ Highlights:
 -- Create Report: gold.report_customers
 -- =============================================================================
 
+IF OBJECT_ID('gold.report_customers', 'V') IS NOT NULL
+    DROP VIEW gold.report_customers;
+GO
+
 CREATE VIEW gold.report_customer AS
 WITH base_query AS (
+/*---------------------------------------------------------------------------
+1) Base Query: Retrieves core columns from tables
+---------------------------------------------------------------------------*/
 SELECT 
-fs.sls_ord_num,
-fs.product_key,
-fs.order_date,
-fs.sales_amount,
-fs.quantity,
-dc.customer_key,
-dc.customer_number,
-
-CONCAT(dc.first_name,' ',dc.last_name) AS customer_name,
-DATEDIFF(year,dc.birthdate,GETDATE()) AS age
+    fs.sls_ord_num,
+    fs.product_key,
+    fs.order_date,
+    fs.sales_amount,
+    fs.quantity,
+    dc.customer_key,
+    dc.customer_number,
+    CONCAT(dc.first_name,' ',dc.last_name) AS customer_name,
+    DATEDIFF(year,dc.birthdate,GETDATE()) AS age
 FROM gold.fact_sales fs
 LEFT JOIN gold.dim_customers dc
 ON fs.customer_key = dc.customer_key
 WHERE order_date IS NOT NULL)
 , customer_aggregation AS (
 --
-SELECT 
-customer_key,
-customer_number,
-customer_name,
-age,
-COUNT(DISTINCT sls_ord_num) AS total_orders,
-SUM(sales_amount) AS total_sales,
-SUM(quantity) AS total_quantity,
-COUNT(DISTINCT product_key) AS total_products,
-MAX(order_date) AS last_order_date,
-DATEDIFF(month,MIN(order_date),MAX(order_date)) AS lifespan
+SELECT
+/*---------------------------------------------------------------------------
+2) Customer Aggregations: Summarizes key metrics at the customer level
+---------------------------------------------------------------------------*/
+    customer_key,
+    customer_number,
+    customer_name,
+    age,
+    COUNT(DISTINCT sls_ord_num) AS total_orders,
+    SUM(sales_amount) AS total_sales,
+    SUM(quantity) AS total_quantity,
+    COUNT(DISTINCT product_key) AS total_products,
+    MAX(order_date) AS last_order_date,
+    DATEDIFF(month,MIN(order_date),MAX(order_date)) AS lifespan
 FROM  base_query
 GROUP BY 
 	customer_key,
