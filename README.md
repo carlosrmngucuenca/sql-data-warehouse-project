@@ -25,6 +25,11 @@ Develop SQL based analytics to deliver detailed insghts into:
 - **Product Performance**
 - **Sales Trends**
 
+#### The analytics has two parts, and the scripts follow them:
+
+Exploratory data analysis, scripts 01 to 06 into analytics folder: you get to know the data, from the tables and dates to the big numbers and the top performers.
+Advanced analytics, scripts 07 to 13: you go deeper with trends, running totals, performance, part-to-whole and segments. Two reports close the project, one for customers and one for products.
+
 These insights empower stakeholders with key business metrics, enabling strategic decision-making
 
 ## 🛡️
